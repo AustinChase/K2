@@ -855,10 +855,15 @@ Iterate over all reports in the list, and extract the category string from each 
 
 import numpy as np
 
+categories = {'anti-social-behaviour', 'bicycle-theft','burglary', 'criminal-damage-arson', \
+              'drugs', 'other-crime', 'other-theft', 'public-order', 'shoplifting', \
+              'theft-from-the-person', 'vehicle-crime', 'violent-crime'}
+
 fig, ax = plt.subplots()
 width = 0.35
 
-categories_freq = {}
+categories_freq = dict((i,0) for i in categories)
+
 
 for report in crime_data:
     # Get category type from the report
@@ -866,13 +871,12 @@ for report in crime_data:
     
     if category in categories_freq:
         categories_freq[category] += 1
-        
     else:
-        categories_freq.update({category : 1})
+        pass
         
-x = list(np.arange(len(categories_freq)))
+x = list(categories_freq.keys())
 
-categories_freq_p = {}
+categories_freq_p = dict((i,0) for i in categories)
 
 for report in crime_data_p:    
     
@@ -882,18 +886,22 @@ for report in crime_data_p:
         categories_freq_p[category] += 1
         
     else:
-        categories_freq_p.update({category : 1})
+        pass
+    
+x_p = list(categories_freq_p.keys())
 
-x_p = list(np.arange(len(categories_freq_p)))
+x.extend(x_p)
+x_c = set(x)
+x_cn = np.arange(len(x_c))
 
-x_c = x + [i for i in x_p if i not in x]
-x_c = np.arange(len(x_c))
+bar_0 = ax.bar(x_cn, categories_freq.values(), width)
+bar_1 = ax.bar(x_cn + width, categories_freq_p.values(), width)
 
-bar_0 = ax.bar(x_c, categories_freq.values(), width)
-bar_1 = ax.bar(x_c + width, categories_freq_p.values(), width)
-
-ax.set_xticks(x_c)
-ax.set_title("Frequencey of crimes near LSE, June 2019/2018")
+ax.set_xticks(x_cn)
+ax.set_xticklabels(x_c, rotation = 'vertical')
+ax.set_title("Frequencey of crimes near LSE, June 2019 vs 2018")
+ax.legend((bar_0[0], bar_1[0]), ('June 2019', 'June 2018'))
+ax.autoscale_view()
 
 plt.show()
 ```
